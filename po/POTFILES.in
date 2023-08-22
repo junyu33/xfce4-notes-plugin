@@ -1,0 +1,16 @@
+src/xfce4-notes-autostart.desktop.in
+src/xfce4-notes-plugin.desktop.in
+src/xfce4-notes.desktop.in
+lib/application.vala
+lib/hypertextview.vala
+lib/icon-button.vala
+lib/note.vala
+lib/theme-gtkcss.vala
+lib/theme.vala
+lib/window-monitor.vala
+lib/window.vala
+src/main-panel-plugin.vala
+src/main-popup.vala
+src/main-status-icon.vala
+src/main-settings-dialog.c
+libc/xfce-autostart.c

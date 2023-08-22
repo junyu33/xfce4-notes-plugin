@@ -1,0 +1,103 @@
+dnl
+dnl xfce4-notes-plugin - Notes plugin for the Xfce4 panel
+dnl
+dnl 2003 Jakob Henriksson <b0kaj+dev@lysator.liu.se>
+dnl 2006-2016 Mike Massonnet <mmassonnet@xfce.org>
+dnl 2023 Arthur Demchenkov <spinal.by@gmail.com>
+dnl
+
+m4_define([xfce4_notes_plugin_version_major], [1])
+m4_define([xfce4_notes_plugin_version_minor], [10])
+m4_define([xfce4_notes_plugin_version_micro], [0])
+m4_define([xfce4_notes_plugin_version_nano], [])
+m4_define([xfce4_notes_plugin_version_build], [@REVISION@])
+m4_define([xfce4_notes_plugin_version_tag], []) # Leave empty for releases
+m4_define([xfce4_notes_plugin_version], [xfce4_notes_plugin_version_major().xfce4_notes_plugin_version_minor().xfce4_notes_plugin_version_micro()ifelse(xfce4_notes_plugin_version_nano(), [], [], [.xfce4_notes_plugin_version_nano()])ifelse(xfce4_notes_plugin_version_tag(), [git], [xfce4_notes_plugin_version_tag()-xfce4_notes_plugin_version_build()], [xfce4_notes_plugin_version_tag()])])
+
+AC_COPYRIGHT([Copyright (c) 2003-2023 The Xfce development team. All rights reserved.])
+AC_PREREQ([2.69])
+AC_INIT([Notes], [xfce4_notes_plugin_version], [https://gitlab.xfce.org/panel-plugins/xfce4-notes-plugin], [xfce4-notes-plugin],
+	[https://docs.xfce.org/panel-plugins/xfce4-notes-plugin])
+AC_REVISION([xfce4_notes_plugin_version_build])
+AC_CANONICAL_TARGET()
+AC_CONFIG_HEADERS([config.h])
+
+LT_PREREQ([2.2.6])
+LT_INIT([disable-static])
+
+AM_INIT_AUTOMAKE([1.13 dist-bzip2 no-dist-gzip foreign])
+AM_MAINTAINER_MODE()
+AM_SILENT_RULES([yes])
+AC_CONFIG_MACRO_DIRS([m4])
+
+dnl Check for basic programs
+AM_PROG_CC_C_O()
+LT_PATH_LD([])
+AC_PROG_INSTALL()
+
+dnl Check for Math lib useful for lib/color.c
+AC_CHECK_HEADERS([math.h])
+AC_SUBST([MATH_LIBS], [" -lm"])
+
+dnl Check for required packages
+XDT_CHECK_LIBX11_REQUIRE()
+XDT_CHECK_PACKAGE([GLIB], [glib-2.0], [2.30.0])
+XDT_CHECK_PACKAGE([GIO], [gio-2.0], [2.30.0])
+XDT_CHECK_PACKAGE([GTK], [gtk+-3.0], [3.22.0])
+XDT_CHECK_PACKAGE([LIBXFCE4UTIL], [libxfce4util-1.0], [4.14.0])
+XDT_CHECK_PACKAGE([LIBXFCE4UI], [libxfce4ui-2], [4.14.0])
+XDT_CHECK_PACKAGE([XFCONF], [libxfconf-0], [4.14.0])
+XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-2.0], [4.14.0])
+dnl Check for valac
+if test "x$USE_MAINTAINER_MODE" = "xyes" ; then
+        AM_PROG_VALAC([0.46.0])
+        if test "x$VALAC" = "x" ; then
+                AC_MSG_ERROR([Cannot find the "valac" compiler in your PATH])
+        else
+                VALAC_CFLAGS="-w"
+                AC_SUBST([VALAC_CFLAGS])
+        fi
+fi
+
+dnl Translations
+IT_PROG_INTLTOOL()
+XDT_I18N([@LINGUAS@])
+
+dnl Check for debugging support
+XDT_FEATURE_DEBUG()
+
+AC_CONFIG_FILES([
+Makefile
+data/Makefile
+data/gtk-3.0/Makefile
+data/icons/Makefile
+data/icons/16x16/Makefile
+data/icons/22x22/Makefile
+data/icons/24x24/Makefile
+data/icons/32x32/Makefile
+data/icons/scalable/Makefile
+data/pixmaps/Makefile
+lib/Makefile
+libc/Makefile
+src/Makefile
+po/Makefile.in
+])
+AC_OUTPUT
+
+dnl ***************************
+dnl *** Print configuration ***
+dnl ***************************
+echo
+echo "Build Configuration:"
+echo
+echo "* Maintainer Mode:        $USE_MAINTAINER_MODE"
+if test "x$USE_MAINTAINER_MODE" = "xyes" ; then
+echo
+echo "    * Vala:               $VALAC $am__vala_version"
+echo
+fi
+echo "* GTK+:                   $GTK_VERSION"
+echo "* Xfce Panel:             $LIBXFCE4PANEL_VERSION"
+echo "* Debug Support:          $enable_debug"
+echo
+
